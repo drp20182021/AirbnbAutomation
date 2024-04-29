@@ -1,0 +1,10 @@
+{
+  "telegram": {
+      "api_token": "your-telegram-api-token",
+      "chat_id": "your-chat-id"
+  },
+  "airbnb_urls": {
+      "411": "https://www.airbnb.es/calendar/ical/...",
+      "511": "https://www.airbnb.es/calendar/ical/..."
+  }
+}
