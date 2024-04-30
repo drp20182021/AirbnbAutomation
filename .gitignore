@@ -3,4 +3,5 @@ __pycache__/
 *.pyo
 *.egg-info/
 *.log
-.venv/
+config.json
+telegramenv/
