@@ -1,20 +1,40 @@
-.PHONY: install reinstall run clean
+.PHONY: install reinstall run clean test test_telegram test_airbnb test_config test_message_format
+
+# Variables
+PYTHON = python
+PIP = pip
+SRC_DIR = src
 
 # Install the project's dependencies
 install:
-	@pip install -r requirements.txt
+	@$(PIP) install -r requirements.txt
 
 # Uninstall the package and reinstall it in editable mode
 reinstall:
-	@pip uninstall -y airbnb_telegram_bot || :
-	@pip install -e .
+	@$(PIP) uninstall -y airbnb_telegram_bot || :
+	@$(PIP) install -e .
 
 # Run the main script
 run:
-	@python src/main.py
+	@$(PYTHON) $(SRC_DIR)/main.py
 
-# Clean up Python's cache files
+# Clean up Python's cache files and other artifacts
 clean:
-	find . -type d -name "__pycache__" -exec rm -r {} + || :
-	find . -name "*.pyc" -delete || :
-	find . -name "*.pyo" -delete || :
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
+	@find . -name "*.pyc" -delete
+	@find . -name "*.pyo" -delete
+
+# Test targets
+test: test_telegram test_airbnb test_config test_message_format
+
+test_telegram:
+	@$(PYTHON) $(SRC_DIR)/telegram_bot.py
+
+test_airbnb:
+	@$(PYTHON) $(SRC_DIR)/airbnb_data.py
+
+test_config:
+	@$(PYTHON) $(SRC_DIR)/config_loader.py
+
+test_message_format:
+	@$(PYTHON) $(SRC_DIR)/message_format.py
