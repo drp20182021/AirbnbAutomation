@@ -1,68 +1,58 @@
+from datetime import datetime, timedelta
+from config_loader import load_configuration, find_config_path
 from airbnb_data import get_airbnb_reservations
+from message_format import (
+    format_basic_message,
+    format_detailed_message,
+    format_detailed_message_assign_mailboxes,
+)
 from telegram_bot import send_telegram_message
-
-
-def assign_mailboxes(checkins):
-    """
-    Assigns mailboxes to the incoming reservations based on available slots.
-
-    Args:
-        checkins (list): A list of check-ins.
-
-    Returns:
-        dict: A dictionary mapping apartment numbers to assigned mailboxes.
-    """
-    mailbox_assignments = {}
-    available_mailboxes = ["📫 Caja 1", "📫 Caja 2", "📫 Caja 3", "📫 Caja 611"]
-
-    for checkin in checkins:
-        apt_number = checkin["apt_number"]
-
-        if apt_number == 411:
-            mailbox_assignments[apt_number] = "📫 Caja 411"
-        elif apt_number == 611 and "📫 Caja 611" not in mailbox_assignments.values():
-            mailbox_assignments[apt_number] = "📫 Caja 611"
-        else:
-            if available_mailboxes:
-                mailbox_assignments[apt_number] = available_mailboxes.pop(0)
-            else:
-                mailbox_assignments[apt_number] = "📫 Caja ???"
-
-    return mailbox_assignments
 
 
 def main():
     """
-    Main function that retrieves reservations, generates the message content, and sends it to Telegram.
+    Main execution function that handles the flow of fetching Airbnb reservation data,
+    formatting messages, and sending them through Telegram based on configurations.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
-    reservations = get_airbnb_reservations()
+    # Load the configuration file path
+    config_path = find_config_path()
+    if not config_path:
+        print("Configuration file not found.")
+        return
 
-    result = ""
+    # Load configuration settings
+    config = load_configuration(config_path)
+    if not config:
+        print("Failed to load configuration.")
+        return
 
-    for date, res in sorted(reservations.items()):
-        result += "➖" * 12 + "\n"
-        result += f"🚨🚨 **{date.strftime('%A %d de %B')}**\n\n"
-        result += f"🔚🔚  {len(res['checkouts'])} CHECKOUTS\n"
+    # Extract Telegram configuration details
+    api_token = config["telegram"]["api_token"]
+    chat_id = config["telegram"]["chat_id"]
 
-        for checkout in res["checkouts"]:
-            result += f"{checkout['apt_number']} checkout {checkout['time']}\n"
+    # Fetch reservations for the specified number of days from today
+    days = 600
+    reservations = get_airbnb_reservations(config, days)
 
-        result += "\n"
-        result += f"🔜🔜  {len(res['checkins'])} CHECK-INS\n"
+    # Format messages to summarize the reservations
+    basic_message = format_basic_message(reservations)
+    detailed_message = format_detailed_message(reservations)
+    detailed_message_with_mailboxes = format_detailed_message_assign_mailboxes(
+        reservations
+    )
 
-        for checkin in res["checkins"]:
-            result += f"{checkin['apt_number']} check-in {checkin['time']}\n"
+    # Send the formatted messages to the Telegram bot; only one should be active to avoid spam
+    # send_telegram_message(basic_message, api_token, chat_id)
+    # send_telegram_message(detailed_message, api_token, chat_id)
+    send_telegram_message(detailed_message_with_mailboxes, api_token, chat_id)
 
-        mailbox_assignments = assign_mailboxes(res["checkins"])
-
-        result += "\n"
-
-        for apt_number, mailbox in mailbox_assignments.items():
-            result += f"{mailbox}: {apt_number}\n"
-
-        result += "\n"
-
-    send_telegram_message(result)
+    print("Messages sent successfully!")
 
 
 if __name__ == "__main__":
