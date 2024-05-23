@@ -4,6 +4,7 @@
 PYTHON = python
 PIP = pip
 SRC_DIR = src
+DATA_DIR = data
 
 # Install the project's dependencies
 install:
@@ -38,3 +39,7 @@ test_config:
 
 test_message_format:
 	@$(PYTHON) $(SRC_DIR)/message_format.py
+
+# Creat mock files
+mock:
+	@$(PYTHON) $(DATA_DIR)/mock_data.py
