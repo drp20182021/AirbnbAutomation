@@ -1,0 +1,52 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ics.py - http://git.io/lLljaA
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240524
+DTEND;VALUE=DATE:20240526
+DESCRIPTION:Reservation details: https://www.airbnb.com/reservation/itinerary
+SUMMARY:Reserved
+UID:972683897@airbnb.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240606
+DTEND;VALUE=DATE:20240608
+SUMMARY:Not available
+UID:624655796@airbnb.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240609
+DTEND;VALUE=DATE:20240613
+DESCRIPTION:Reservation details: https://www.airbnb.com/reservation/itinerary
+SUMMARY:Reserved
+UID:389711518@airbnb.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240528
+DTEND;VALUE=DATE:20240602
+DESCRIPTION:Reservation details: https://www.airbnb.com/reservation/itinerary
+SUMMARY:Reserved
+UID:358501881@airbnb.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240612
+DTEND;VALUE=DATE:20240617
+DESCRIPTION:Reservation details: https://www.airbnb.com/reservation/itinerary
+SUMMARY:Reserved
+UID:587042612@airbnb.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240610
+DTEND;VALUE=DATE:20240615
+DESCRIPTION:Reservation details: https://www.airbnb.com/reservation/itinerary
+SUMMARY:Reserved
+UID:188231532@airbnb.com
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20240605
+DTEND;VALUE=DATE:20240610
+DESCRIPTION:Reservation details: https://www.airbnb.com/reservation/itinerary
+SUMMARY:Reserved
+UID:181727176@airbnb.com
+END:VEVENT
+END:VCALENDAR
