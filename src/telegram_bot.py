@@ -1,4 +1,5 @@
 import requests
+from config_utils import find_config_paths, load_configuration
 
 
 def send_telegram_message(text, api_token, chat_id):
@@ -23,10 +24,12 @@ def send_telegram_message(text, api_token, chat_id):
 
 
 if __name__ == "__main__":
-    from config_loader import find_config_path, load_configuration
+    config_paths = find_config_paths()
+    if not config_paths:
+        print("Configuration file not found.")
+        exit(1)
 
-    config_path = find_config_path()
-    if config_path:
+    for config_path in config_paths:
         config = load_configuration(config_path)
         if config and "telegram" in config:
             api_token = config["telegram"]["api_token"]
@@ -36,7 +39,6 @@ if __name__ == "__main__":
                 api_token,
                 chat_id,
             )
+            print(f"Message sent using {config_path}")
         else:
-            print("Failed to load configuration.")
-    else:
-        print("Configuration file not found.")
+            print(f"Failed to load configuration from {config_path}.")

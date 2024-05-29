@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from config_loader import load_configuration, find_config_path
+from config_utils import load_configuration, find_config_paths
 from airbnb_data import get_airbnb_reservations
 from message_format import (
     format_basic_message,
@@ -7,26 +7,32 @@ from message_format import (
     format_detailed_message_assign_mailboxes,
 )
 from telegram_bot import send_telegram_message
+import sys
 
 
-def main():
+def main(config_filename=None, days=7):
     """
-    Main execution function that handles the flow of fetching Airbnb reservation data,
-    formatting messages, and sending them through Telegram based on configurations.
+    Main function to run the application with a specified or default configuration file.
 
     Args:
-        None
-
-    Returns:
-        None
+        config_filename (str, optional): The configuration file to use. If None, defaults to 'config.json'.
+        days (int, optional): The number of days to fetch reservations for. Defaults to 600.
     """
-    # Load the configuration file path
-    config_path = find_config_path()
+    config_paths = find_config_paths(
+        config_filename if config_filename else "config.json"
+    )
+
+    if config_filename:
+        # Filter paths to find the one that matches the provided filename
+        config_path = next((p for p in config_paths if p.name == config_filename), None)
+    else:
+        # Use the first available config file as default
+        config_path = config_paths[0] if config_paths else None
+
     if not config_path:
         print("Configuration file not found.")
         return
 
-    # Load configuration settings
     config = load_configuration(config_path)
     if not config:
         print("Failed to load configuration.")
@@ -37,7 +43,6 @@ def main():
     chat_id = config["telegram"]["chat_id"]
 
     # Fetch reservations for the specified number of days from today
-    days = 600
     reservations = get_airbnb_reservations(config, days)
 
     # Format messages to summarize the reservations
@@ -56,4 +61,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Allow passing the configuration filename and number of days as command-line arguments
+    config_filename = sys.argv[1] if len(sys.argv) > 1 else None
+    days = int(sys.argv[2]) if len(sys.argv) > 2 else 600
+    main(config_filename, days)

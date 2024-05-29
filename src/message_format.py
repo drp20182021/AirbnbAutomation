@@ -1,3 +1,7 @@
+from airbnb_data import get_airbnb_reservations
+from config_utils import find_config_paths, load_configuration, print_pretty_json
+
+
 def format_basic_message(reservations):
     """
     Formats a basic message summarizing reservations.
@@ -93,13 +97,23 @@ def format_detailed_message_assign_mailboxes(reservations):
 
 
 if __name__ == "__main__":
-    from airbnb_data import get_airbnb_reservations
-    from config_loader import find_config_path, load_configuration
-
-    config_path = find_config_path()
-    if config_path:
-        config = load_configuration(config_path)
-        reservations = get_airbnb_reservations(config, 600)  # Fetch for next 600 days
-        print(format_detailed_message_assign_mailboxes(reservations))
-    else:
+    config_paths = find_config_paths()
+    if not config_paths:
         print("Configuration file not found.")
+        exit(1)
+
+    for config_path in config_paths:
+        config = load_configuration(config_path)
+        if config:
+            reservations = get_airbnb_reservations(
+                config, 600
+            )  # Fetch for next 600 days
+            print(f"Messages for reservations from {config_path}:")
+            print("Basic Message:")
+            print(format_basic_message(reservations))
+            print("Detailed Message:")
+            print(format_detailed_message(reservations))
+            print("Detailed Message with Mailboxes:")
+            print(format_detailed_message_assign_mailboxes(reservations))
+        else:
+            print(f"Failed to load configuration from {config_path}.")
