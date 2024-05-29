@@ -6,3 +6,4 @@ __pycache__/
 config.json
 telegramenv/
 src/testtest.ipynb
+tests/config_test.json
