@@ -2,6 +2,8 @@ import requests
 from datetime import datetime, timedelta
 from ics import Calendar
 import logging
+from config_utils import find_config_paths, load_configuration, print_pretty_json
+import os
 
 # Configure logging
 logging.basicConfig(
@@ -9,22 +11,26 @@ logging.basicConfig(
 )
 
 
-def fetch_calendar_data(url):
+def fetch_calendar_data(url_or_path):
     """
-    Fetch calendar data from a specified URL.
+    Fetch calendar data from a specified URL or file path.
 
     Args:
-        url (str): The URL from which to fetch calendar data.
+        url_or_path (str): The URL or file path from which to fetch calendar data.
 
     Returns:
         str: The calendar data as a string if successful, or None if an error occurs.
     """
     try:
-        response = requests.get(url)
-        response.raise_for_status()  # Throw an error for 4xx/5xx responses
-        return response.text
-    except requests.RequestException as e:
-        logging.error(f"Error getting data from {url}: {e}")
+        if os.path.isfile(url_or_path):
+            with open(url_or_path, "r") as file:
+                return file.read()
+        else:
+            response = requests.get(url_or_path)
+            response.raise_for_status()  # Throw an error for 4xx/5xx responses
+            return response.text
+    except (requests.RequestException, FileNotFoundError) as e:
+        logging.error(f"Error getting data from {url_or_path}: {e}")
         return None
 
 
@@ -62,8 +68,8 @@ def get_airbnb_reservations(config, days):
     urls = config.get("airbnb_urls", {})
     reservations = {}
 
-    for apt_number, url in urls.items():
-        calendar_data = fetch_calendar_data(url)
+    for apt_number, url_or_path in urls.items():
+        calendar_data = fetch_calendar_data(url_or_path)
         if calendar_data:
             events = parse_calendar_events(calendar_data)
             for event in events:
@@ -84,12 +90,18 @@ def get_airbnb_reservations(config, days):
 
 
 if __name__ == "__main__":
-    from config_loader import find_config_path, load_configuration, print_pretty_json
-
-    config_path = find_config_path()
-    if config_path:
-        config = load_configuration(config_path)
-        reservations = get_airbnb_reservations(config, 600)  # Fetch for next 600 days
-        print_pretty_json(reservations)
-    else:
+    config_paths = find_config_paths()
+    if not config_paths:
         print("Configuration file not found.")
+        exit(1)
+
+    for config_path in config_paths:
+        config = load_configuration(config_path)
+        if config:
+            reservations = get_airbnb_reservations(
+                config, 600
+            )  # Fetch for next 600 days
+            print(f"Reservations from {config_path}:")
+            print_pretty_json(reservations)
+        else:
+            print(f"Failed to load configuration from {config_path}.")
