@@ -7,7 +7,7 @@ Welcome to the Airbnb House Renting Notification Bot! This project automates the
 ### Prerequisites
 
 1. **Python 3.10+**: Ensure you have Python installed. You can download it from [python.org](https://www.python.org/downloads/).
-2. **Virtual Environment**: It is recommended to use a virtual environment to manage dependencies.
+2. **Virtual Environment**: It is recommended to use a virtual environment to manage dependencies. You can learn how to create one [here](https://docs.python.org/3/tutorial/venv.html).
 
 ### Installation
 
@@ -25,22 +25,26 @@ Welcome to the Airbnb House Renting Notification Bot! This project automates the
 
 3. **Install the dependencies**:
     ```sh
-    pip install -r requirements.txt
+    make install
     ```
 
 ### Configuration
+
+#### Telegram Bot Setup
 
 1. **Create a new Telegram bot** by talking to the BotFather and receive the bot HTTP API token. Follow these guides:
     - [How to create a bot](https://core.telegram.org/bots#how-do-i-create-a-bot)
     - [YouTube Guide](https://www.youtube.com/watch?v=UQrcOj63S2o)
 
-2. **Set up your configuration files**:
-    - `config.json`: This file contains your real data.
-    - `tests/config_test.json`: This file contains mock data for testing.
+#### Airbnb ICS URLs
 
-    Example `config.json`:
-    ```json
-    {
+To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.com/help/article/99/how-do-i-sync-my-airbnb-calendar-with-another-calendar).
+
+#### Set Up Configuration Files
+
+1. **Create `config.json`**:
+    ```sh
+    echo '{
       "telegram": {
         "api_token": "YOUR_TELEGRAM_API_TOKEN",
         "chat_id": "YOUR_CHAT_ID"
@@ -54,36 +58,24 @@ Welcome to the Airbnb House Renting Notification Bot! This project automates the
         "6": "https://www.airbnb.com/calendar/ical/...6.ics",
         "7": "https://www.airbnb.com/calendar/ical/...7.ics"
       }
-    }
+    }' > config.json
     ```
 
-    Example `config_test.json`:
-    ```json
-    {
-      "telegram": {
-        "api_token": "YOUR_TELEGRAM_API_TOKEN",
-        "chat_id": "YOUR_CHAT_ID"
-      },
-      "airbnb_urls": {
-        "1": "data/apartment_1.ics",
-        "2": "data/apartment_2.ics",
-        "3": "data/apartment_3.ics",
-        "4": "data/apartment_4.ics",
-        "5": "data/apartment_5.ics"
-      }
-    }
+2. **Create `config_test.json`** for testing with mock data. You need to generate mock data by running `make mock`:
+    ```sh
+    make mock
     ```
 
 ### Usage
 
 1. **Run the main script with real data**:
     ```sh
-    make run
+    python src/main.py config.json 600  # 600 is the number of days to fetch reservations for
     ```
 
 2. **Run the main script with mock data**:
     ```sh
-    make run_mock
+    python src/main.py tests/config_test.json 7  # 7 is the number of days to fetch reservations for
     ```
 
 3. **Run tests**:
@@ -96,9 +88,19 @@ Welcome to the Airbnb House Renting Notification Bot! This project automates the
       make test_all_tests
       ```
 
-### Getting Airbnb ICS URLs
+### Example Usage
 
-To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.com/help/article/99/how-do-i-sync-my-airbnb-calendar-with-another-calendar).
+To run the script and see the output in your Telegram, use the following commands:
+
+1. For real data:
+    ```sh
+    python src/main.py config.json 600  # 600 is the number of days to fetch reservations for
+    ```
+
+2. For mock data:
+    ```sh
+    python src/main.py tests/config_test.json 7  # 7 is the number of days to fetch reservations for
+    ```
 
 ## 💼 Features
 
@@ -176,24 +178,4 @@ To automate the script to run daily, you can use cron jobs on Linux or Task Sche
     Add arguments: C:\path\to\your\project\src\main.py config.json 3
     ```
 
-## Example Usage
-
-To run the script and see the output in your Telegram, use the following commands:
-
-1. For real data:
-    ```sh
-    make run
-    ```
-
-2. For mock data:
-    ```sh
-    make run_mock
-    ```
-
-## Contributing
-
-We welcome contributions to improve the project! Please fork the repository and submit a pull request.
-
 ---
-
-This README provides a comprehensive guide to setting up and using your Airbnb House Renting Notification Bot. Feel free to adjust any parts to better suit your project's specifics.
