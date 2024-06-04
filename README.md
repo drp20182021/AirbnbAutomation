@@ -13,8 +13,8 @@ Welcome to the Airbnb House Renting Notification Bot! This project automates the
 
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/your-username/airbnb-telegram-bot.git
-    cd airbnb-telegram-bot
+    git clone https://github.com/drp20182021/AirbnbAutomation.git
+    cd AirbnbAutomation
     ```
 
 2. **Create and activate a virtual environment**:
