@@ -44,8 +44,8 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
 
 1. **Create `config.json`**:
     Replace the placeholders with your actual Airbnb iCal URLs and Telegram bot token and chat ID.
-    ```sh
-    echo '{
+    ```json
+    {
       "telegram": {
         "api_token": "YOUR_TELEGRAM_API_TOKEN",
         "chat_id": "YOUR_CHAT_ID"
@@ -59,7 +59,12 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
         "6": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_6.ics",
         "7": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_7.ics"
       }
-    }' > config.json
+    }
+    ```
+
+    You can create the file by running the following command and then editing the file:
+    ```sh
+    nano config.json
     ```
 
 2. **Create `config_test.json`** for testing with mock data. You need to generate mock data by running `make mock`:
