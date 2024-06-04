@@ -1,4 +1,10 @@
+import sys
 import unittest
+from pathlib import Path
+
+# Add the src directory to the Python path
+sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
+
 from airbnb_data import get_airbnb_reservations
 from config_utils import find_config_paths, load_configuration
 from message_format import (

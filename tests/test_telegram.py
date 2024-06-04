@@ -1,4 +1,11 @@
+import sys
 import unittest
+from pathlib import Path
+
+# Add the src directory to the Python path
+sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
+
+
 from telegram_bot import send_telegram_message
 from config_utils import find_config_paths, load_configuration
 

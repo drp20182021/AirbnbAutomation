@@ -1,10 +1,10 @@
 import sys
-import os
 import unittest
 from pathlib import Path
 
 # Asegurarse de que el directorio 'src' esté en el PYTHONPATH
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
+
 
 from airbnb_data import get_airbnb_reservations
 from config_utils import find_config_paths, load_configuration, print_pretty_json
