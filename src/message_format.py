@@ -59,13 +59,14 @@ def format_detailed_message_assign_mailboxes(reservations):
              ensuring that specific apartments receive dedicated mailboxes when possible.
     """
     result = ""
-    # Main list of initially available mailboxes
-    general_mailboxes = ["📫 Caja 1", "📫 Caja 2", "📫 Caja 3"]
 
     for date, res in sorted(reservations.items(), key=lambda x: x[0]):
+        # Reset mailboxes for each day
+        general_mailboxes = ["📫 1", "📫 2", "📫 3"]
+        special_mailboxes = {"6": "📫 6", "7": "📫 7"}
         mailbox_assignments = {}
-        special_mailboxes = {"411": "📫 Caja 411", "611": "📫 Caja 611"}
-        # We check if 411 or 611 are at check-ins to reserve your boxes
+
+        # Assign special mailboxes first if applicable
         for checkin in res["checkins"]:
             apt_number = checkin["apt_number"]
             if apt_number in special_mailboxes:
@@ -74,18 +75,20 @@ def format_detailed_message_assign_mailboxes(reservations):
         result += f"📅 {date.strftime('%A, %d de %B %Y')}\n"
         result += f"🔑 Check-ins: {len(res['checkins'])}\n"
 
+        # Assign general mailboxes
         for checkin in res["checkins"]:
             apt_number = checkin["apt_number"]
             if apt_number not in mailbox_assignments:
                 if general_mailboxes:
                     mailbox_assignments[apt_number] = general_mailboxes.pop(0)
-                elif (
-                    special_mailboxes
-                ):  # Assign special boxes if the general ones are sold out
+                elif special_mailboxes:
+                    # If no general mailboxes left, use special mailboxes
                     key, box = special_mailboxes.popitem()
                     mailbox_assignments[apt_number] = box
                 else:
-                    mailbox_assignments[apt_number] = "📫 Caja ???"
+                    # If no mailboxes left, assign default
+                    mailbox_assignments[apt_number] = "📫 ???"
+
             result += f"  - Apt {apt_number} - Box {mailbox_assignments[apt_number]}\n"
 
         result += f"🚪 Check-outs: {len(res['checkouts'])}\n"
