@@ -43,6 +43,7 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
 #### Set Up Configuration Files
 
 1. **Create `config.json`**:
+    Replace the placeholders with your actual Airbnb iCal URLs and Telegram bot token and chat ID.
     ```sh
     echo '{
       "telegram": {
@@ -50,13 +51,13 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
         "chat_id": "YOUR_CHAT_ID"
       },
       "airbnb_urls": {
-        "1": "https://www.airbnb.com/calendar/ical/...1.ics",
-        "2": "https://www.airbnb.com/calendar/ical/...2.ics",
-        "3": "https://www.airbnb.com/calendar/ical/...3.ics",
-        "4": "https://www.airbnb.com/calendar/ical/...4.ics",
-        "5": "https://www.airbnb.com/calendar/ical/...5.ics",
-        "6": "https://www.airbnb.com/calendar/ical/...6.ics",
-        "7": "https://www.airbnb.com/calendar/ical/...7.ics"
+        "1": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_1.ics",
+        "2": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_2.ics",
+        "3": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_3.ics",
+        "4": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_4.ics",
+        "5": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_5.ics",
+        "6": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_6.ics",
+        "7": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_7.ics"
       }
     }' > config.json
     ```
@@ -70,7 +71,7 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
 
 1. **Run the main script with real data**:
     ```sh
-    python src/main.py config.json 600  # 600 is the number of days to fetch reservations for
+    python src/main.py config.json 7  # 7 is the number of days to fetch reservations for
     ```
 
 2. **Run the main script with mock data**:
@@ -87,20 +88,6 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
       ```sh
       make test_all_tests
       ```
-
-### Example Usage
-
-To run the script and see the output in your Telegram, use the following commands:
-
-1. For real data:
-    ```sh
-    python src/main.py config.json 600  # 600 is the number of days to fetch reservations for
-    ```
-
-2. For mock data:
-    ```sh
-    python src/main.py tests/config_test.json 7  # 7 is the number of days to fetch reservations for
-    ```
 
 ## 💼 Features
 
