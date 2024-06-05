@@ -4,34 +4,30 @@ from pathlib import Path
 from datetime import date, datetime
 
 
-def find_config_paths(config_filename="config.json"):
+def find_config_path(config_filename="config.json"):
     """
-    Searches for configuration files starting from the parent directory and its subdirectories.
-    If not found, it checks the current working directory and the user's home directory.
+    Searches for the configuration file in the current directory, parent directories (up to two levels), and the user's home directory.
 
     Args:
         config_filename (str): The name of the configuration file to search for, default is 'config.json'.
 
     Returns:
-        list: A list of unique paths to the configuration files if found.
+        Path: The path to the configuration file if found, otherwise None.
     """
-    paths = set()  # Use a set to avoid duplicates
-
-    # Start by checking the parent directory and its subdirectories
-    parent_directory = Path.cwd().parent
-    for path in parent_directory.rglob(config_filename):
-        paths.add(path)
-
-    # Check the current working directory and the user's home directory
-    additional_paths = [
-        Path.cwd() / config_filename,  # Current working directory
-        Path.home() / config_filename,  # User's home directory
+    # Define directories to search
+    directories_to_search = [
+        Path.cwd(),  # Current directory
+        Path.cwd().parent,  # Parent directory
+        Path.cwd().parent.parent,  # Parent's parent directory
+        Path.home(),  # User's home directory
     ]
-    for path in additional_paths:
-        if path.exists():
-            paths.add(path)
 
-    return list(paths)
+    for directory in directories_to_search:
+        potential_path = directory / config_filename
+        if potential_path.exists():
+            return potential_path
+
+    return None
 
 
 def load_configuration(path):
@@ -97,15 +93,14 @@ def print_pretty_json(data):
 
 
 if __name__ == "__main__":
-    config_paths = find_config_paths()
-    if config_paths:
-        for config_path in config_paths:
-            print(f"Configuration file found at: {config_path}")
-            config = load_configuration(config_path)
-            if config is not None:
-                print("Configuration loaded successfully:")
-                print_pretty_json(config)
-            else:
-                print(f"Failed to load configuration from {config_path}.")
+    config_path = find_config_path()
+    if config_path:
+        print(f"Configuration file found at: {config_path}")
+        config = load_configuration(config_path)
+        if config is not None:
+            print("Configuration loaded successfully:")
+            print_pretty_json(config)
+        else:
+            print(f"Failed to load configuration from {config_path}.")
     else:
         print("Configuration file not found.")

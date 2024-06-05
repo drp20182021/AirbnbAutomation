@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 from airbnb_data import get_airbnb_reservations
-from config_utils import find_config_paths, load_configuration
+from config_utils import find_config_path, load_configuration
 from message_format import (
     format_basic_message,
     format_detailed_message,
@@ -16,22 +16,29 @@ from message_format import (
 
 class TestMessageFormat(unittest.TestCase):
     def test_message_format_with_mock_data(self):
-        config_paths = find_config_paths("config_test.json")
-        self.assertGreater(len(config_paths), 0, "No mock configuration file found.")
+        config_path = find_config_path()
+        self.assertIsNotNone(config_path, "Configuration file not found.")
 
-        for config_path in config_paths:
-            config = load_configuration(config_path)
-            self.assertIsNotNone(
-                config, f"Failed to load configuration from {config_path}"
+        config = load_configuration(config_path)
+        self.assertIsNotNone(config, f"Failed to load configuration from {config_path}")
+
+        # Replace real URLs with mock URLs for testing
+        config["airbnb_urls"] = config["mock_airbnb_urls"]
+        reservations = get_airbnb_reservations(config, 7)
+
+        mailboxes = config.get("mock_mailboxes", [])
+        special_mailboxes = config.get("mock_special_mailboxes", {})
+
+        print("Basic Message:")
+        print(format_basic_message(reservations))
+        print("Detailed Message:")
+        print(format_detailed_message(reservations))
+        print("Detailed Message with Mailboxes:")
+        print(
+            format_detailed_message_assign_mailboxes(
+                reservations, mailboxes, special_mailboxes
             )
-            reservations = get_airbnb_reservations(config, 7)
-            print(f"Messages for reservations from {config_path}:")
-            print("Basic Message:")
-            print(format_basic_message(reservations))
-            print("Detailed Message:")
-            print(format_detailed_message(reservations))
-            print("Detailed Message with Mailboxes:")
-            print(format_detailed_message_assign_mailboxes(reservations))
+        )
 
 
 if __name__ == "__main__":

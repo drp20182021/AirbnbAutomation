@@ -1,4 +1,4 @@
-.PHONY: install reinstall run clean test test_telegram test_airbnb test_config test_message_format mock test_all_tests
+.PHONY: install reinstall run clean test test_telegram test_airbnb test_config test_message_format mock test_all_tests setup_config
 
 # Variables
 PYTHON = python
@@ -20,15 +20,19 @@ reinstall:
 run:
 	@$(PYTHON) $(SRC_DIR)/main.py config.json 600
 
-# Run the main script with mock data and a specified number of days (default: 600)
+# Run the main script with mock data and a specified number of days (default: 7)
 run_mock:
-	@$(PYTHON) $(SRC_DIR)/main.py config_test.json 7
+	@$(PYTHON) $(SRC_DIR)/main.py config.json 7 --mock
 
 # Clean up Python's cache files and other artifacts
 clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@find . -name "*.pyc" -delete
 	@find . -name "*.pyo" -delete
+
+# Set up the configuration file
+setup_config:
+	@$(PYTHON) setup_config.py
 
 # Test targets for real data
 test: test_telegram test_airbnb test_config test_message_format

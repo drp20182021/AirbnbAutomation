@@ -1,5 +1,5 @@
 from airbnb_data import get_airbnb_reservations
-from config_utils import find_config_paths, load_configuration, print_pretty_json
+from config_utils import find_config_path, load_configuration, print_pretty_json
 
 
 def format_basic_message(reservations):
@@ -45,7 +45,9 @@ def format_detailed_message(reservations):
     return result
 
 
-def format_detailed_message_assign_mailboxes(reservations):
+def format_detailed_message_assign_mailboxes(
+    reservations, mailboxes, special_mailboxes
+):
     """
     Formats a detailed message for each reservation and assigns mailboxes according to specific rules.
     Special mailboxes are reserved for specific apartments if they are available.
@@ -53,6 +55,8 @@ def format_detailed_message_assign_mailboxes(reservations):
     Args:
         reservations (dict): A dictionary with dates as keys. Each key contains a dictionary
                              with lists of 'checkins' and 'checkouts'.
+        mailboxes (list): A list of general mailboxes.
+        special_mailboxes (dict): A dictionary mapping specific apartments to special mailboxes.
 
     Returns:
         str: A detailed string for each date, showing check-ins and check-outs with assigned mailbox for each apartment,
@@ -61,35 +65,35 @@ def format_detailed_message_assign_mailboxes(reservations):
     result = ""
 
     for date, res in sorted(reservations.items(), key=lambda x: x[0]):
+
         # Reset mailboxes for each day
-        general_mailboxes = ["📫 1", "📫 2", "📫 3"]
-        special_mailboxes = {"6": "📫 6", "7": "📫 7"}
+        available_mailboxes = mailboxes[:]
         mailbox_assignments = {}
+
+        result += f"📅 {date.strftime('%A, %d de %B %Y')}\n"
+        result += f"🔑 Check-ins: {len(res['checkins'])}\n"
 
         # Assign special mailboxes first if applicable
         for checkin in res["checkins"]:
             apt_number = checkin["apt_number"]
-            if apt_number in special_mailboxes:
-                mailbox_assignments[apt_number] = special_mailboxes.pop(apt_number)
-
-        result += f"📅 {date.strftime('%A, %d de %B %Y')}\n"
-        result += f"🔑 Check-ins: {len(res['checkins'])}\n"
+            if (
+                apt_number in special_mailboxes
+                and special_mailboxes[apt_number] not in mailbox_assignments.values()
+            ):
+                mailbox_assignments[apt_number] = special_mailboxes[apt_number]
+                available_mailboxes.remove(special_mailboxes[apt_number])
 
         # Assign general mailboxes
         for checkin in res["checkins"]:
             apt_number = checkin["apt_number"]
             if apt_number not in mailbox_assignments:
-                if general_mailboxes:
-                    mailbox_assignments[apt_number] = general_mailboxes.pop(0)
-                elif special_mailboxes:
-                    # If no general mailboxes left, use special mailboxes
-                    key, box = special_mailboxes.popitem()
-                    mailbox_assignments[apt_number] = box
+                if available_mailboxes:
+                    mailbox_assignments[apt_number] = available_mailboxes.pop(0)
                 else:
                     # If no mailboxes left, assign default
-                    mailbox_assignments[apt_number] = "📫 ???"
+                    mailbox_assignments[apt_number] = "???"
 
-            result += f"  - Apt {apt_number} - Box {mailbox_assignments[apt_number]}\n"
+            result += f"  - Apt {apt_number} - 📫 {mailbox_assignments[apt_number]}\n"
 
         result += f"🚪 Check-outs: {len(res['checkouts'])}\n"
         for checkout in res["checkouts"]:
@@ -100,23 +104,26 @@ def format_detailed_message_assign_mailboxes(reservations):
 
 
 if __name__ == "__main__":
-    config_paths = find_config_paths()
-    if not config_paths:
+    config_path = find_config_path()
+    if not config_path:
         print("Configuration file not found.")
         exit(1)
 
-    for config_path in config_paths:
-        config = load_configuration(config_path)
-        if config:
-            reservations = get_airbnb_reservations(
-                config, 600
-            )  # Fetch for next 600 days
-            print(f"Messages for reservations from {config_path}:")
-            print("Basic Message:")
-            print(format_basic_message(reservations))
-            print("Detailed Message:")
-            print(format_detailed_message(reservations))
-            print("Detailed Message with Mailboxes:")
-            print(format_detailed_message_assign_mailboxes(reservations))
-        else:
-            print(f"Failed to load configuration from {config_path}.")
+    config = load_configuration(config_path)
+    if config:
+        reservations = get_airbnb_reservations(config, 600)  # Fetch for next 600 days
+        print(f"Messages for reservations from {config_path}:")
+        print("Basic Message:")
+        print(format_basic_message(reservations))
+        print("Detailed Message:")
+        print(format_detailed_message(reservations))
+        print("Detailed Message with Mailboxes:")
+        mailboxes = config.get("mailboxes", [])
+        special_mailboxes = config.get("special_mailboxes", {})
+        print(
+            format_detailed_message_assign_mailboxes(
+                reservations, mailboxes, special_mailboxes
+            )
+        )
+    else:
+        print(f"Failed to load configuration from {config_path}.")

@@ -42,57 +42,176 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
 
 #### Set Up Configuration Files
 
-1. **Create `config.json`**:
-    Replace the placeholders with your actual Airbnb iCal URLs and Telegram bot token and chat ID.
+1. **Run the setup script**:
+    ```sh
+    make setup_config
+    ```
+
+    This script will guide you through the process of creating the `config.json` file by asking a series of questions such as:
+    - Your Telegram API token
+    - Your Telegram chat ID
+    - The apartment number and its corresponding iCal URL
+    - The mailboxes available for key storage
+    - Any special mailboxes assigned to specific apartments
+
+    Example of `config.json`:
     ```json
     {
-      "telegram": {
-        "api_token": "YOUR_TELEGRAM_API_TOKEN",
-        "chat_id": "YOUR_CHAT_ID"
-      },
-      "airbnb_urls": {
-        "1": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_1.ics",
-        "2": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_2.ics",
-        "3": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_3.ics",
-        "4": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_4.ics",
-        "5": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_5.ics",
-        "6": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_6.ics",
-        "7": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_7.ics"
-      }
+        "telegram": {
+            "api_token": "YOUR_TELEGRAM_API_TOKEN",
+            "chat_id": "YOUR_CHAT_ID"
+        },
+        "airbnb_urls": {
+            "1": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_1.ics",
+            "2": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_2.ics",
+            "3": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_3.ics",
+            "4": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_4.ics",
+            "5": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_5.ics",
+            "6": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_6.ics",
+            "7": "https://www.airbnb.com/calendar/ical/YOUR_ICAL_URL_7.ics"
+        },
+        "mailboxes": [
+            "1", "2", "3", "4", "5"
+        ],
+        "special_mailboxes": {
+            "1": "5",
+            "2": "4"
+        },
+        "mock_airbnb_urls": {
+            "1": "data/apartment_1.ics",
+            "2": "data/apartment_2.ics",
+            "3": "data/apartment_3.ics",
+            "4": "data/apartment_4.ics",
+            "5": "data/apartment_5.ics"
+        },
+        "mock_mailboxes": [
+            "1", "2", "3"
+        ],
+        "mock_special_mailboxes": {
+            "1": "3",
+            "2": "1"
+        }
     }
     ```
 
-    You can create the file by running the following command and then editing the file:
-    ```sh
-    nano config.json
-    ```
-
-2. **Create `config_test.json`** for testing with mock data. You need to generate mock data by running `make mock`:
+2. **Create mock data**:
     ```sh
     make mock
     ```
+
+    This generates mock ICS files for testing purposes.
 
 ### Usage
 
 1. **Run the main script with real data**:
     ```sh
-    python src/main.py config.json 7  # 7 is the number of days to fetch reservations for
+    make run
     ```
+
+    This will fetch reservations from the Airbnb URLs provided in the `config.json` file and send notifications to your Telegram bot.
 
 2. **Run the main script with mock data**:
     ```sh
-    python src/main.py tests/config_test.json 7  # 7 is the number of days to fetch reservations for
+    make run_mock
     ```
 
-3. **Run tests**:
-    - For real data:
+    This will fetch reservations from the mock Airbnb URLs provided in the `config.json` file and send notifications to your Telegram bot.
+
+### Testing
+
+It's important to test your setup to ensure everything is working correctly. The Makefile includes several targets for running different sets of tests.
+
+1. **Run all tests**:
+    ```sh
+    make test_all_tests
+    ```
+
+    This will run all the tests including those for real and mock data.
+
+2. **Run specific tests**:
+    - **Telegram Bot Tests**:
       ```sh
-      make test
+      make test_telegram
       ```
-    - For mock data:
+      Runs tests related to sending messages via Telegram.
+
+    - **Airbnb Data Tests**:
       ```sh
-      make test_all_tests
+      make test_airbnb
       ```
+      Tests fetching and parsing of Airbnb reservations.
+
+    - **Configuration Tests**:
+      ```sh
+      make test_config
+      ```
+      Verifies that the configuration utilities are working correctly.
+
+    - **Message Formatting Tests**:
+      ```sh
+      make test_message_format
+      ```
+      Tests the formatting of messages sent to the user.
+
+    - **Mock Airbnb Data Tests**:
+      ```sh
+      make test_mock_airbnb
+      ```
+      Tests fetching and parsing of mock Airbnb reservations.
+
+    - **Mock Message Formatting Tests**:
+      ```sh
+      make test_mock_message_format
+      ```
+      Tests the formatting of messages using mock data.
+
+    - **Mock Telegram Bot Tests**:
+      ```sh
+      make test_mock_telegram
+      ```
+      Tests sending messages via Telegram using mock data.
+
+    - **Mock Configuration Tests**:
+      ```sh
+      make test_mock_config
+      ```
+      Verifies that the configuration utilities are working correctly with mock data.
+
+### Example Output
+
+When the script runs, it sends notifications to the specified Telegram chat. An example notification might look like:
+
+📅 Friday, 01 de November 2024
+🔑 Check-ins: 0
+🚪 Check-outs: 6
+- Apt 1
+- Apt 2
+- Apt 4
+- Apt 5
+- Apt 6
+- Apt 7
+
+📅 Thursday, 05 de June 2025
+🔑 Check-ins: 6
+- Apt 1 - Box 5
+- Apt 2 - Box 4
+- Apt 4 - Box 1
+- Apt 5 - Box 2
+- Apt 6 - Box 3
+- Apt 7 - Box 5
+🚪 Check-outs: 0
+
+📅 Friday, 06 de June 2025
+🔑 Check-ins: 0
+🚪 Check-outs: 7
+- Apt 1
+- Apt 2
+- Apt 3
+- Apt 4
+- Apt 5
+- Apt 6
+- Apt 7
+
 
 ## 💼 Features
 
@@ -103,46 +222,19 @@ To obtain your Airbnb calendar URLs, follow the guide [here](https://www.airbnb.
 ## 🛠️ Technologies
 
 - **Python**: Main programming language.
-- **ICS (iCalendar)**: For calendar event handling.
-- **Requests**: For making HTTP requests.
-- **Telegram Bot API**: For interacting with Telegram.
+- **ICS (iCalendar)**: For calendar data parsing.
+- **Telegram Bot API**: For sending notifications.
+- **Makefile**: For managing build and test automation.
 
 ## 📃 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙋‍♂️ Support
 
 If you have any questions, feel free to open an issue or reach out to the maintainers.
 
-Happy automating! 🏡
-
-## File Structure
-
-### Project Directory
-
-- **data/**: Contains ICS files and mock data generator.
-  - `apartment_1.ics`, `apartment_2.ics`, `apartment_3.ics`, `apartment_4.ics`, `apartment_5.ics`, `mock_data.py`
-- **src/**: Contains the source code for the project.
-  - `airbnb_data.py`: Handles fetching and parsing Airbnb reservation data.
-  - `config_utils.py`: Utilities for loading and managing configuration files.
-  - `main.py`: Main script to run the application.
-  - `message_format.py`: Functions for formatting messages.
-  - `telegram_bot.py`: Functions for interacting with the Telegram API.
-- **tests/**: Contains tests and mock configurations.
-  - `config_test.json`: Mock configuration for testing.
-  - `test_airbnb.py`: Tests for Airbnb data handling.
-  - `test_config.py`: Tests for configuration utilities.
-  - `test_message_format.py`: Tests for message formatting.
-  - `test_telegram.py`: Tests for Telegram bot functionality.
-- **telegramenv/**: Virtual environment directory.
-- **.envrc**: Environment variable configuration file.
-- **.gitignore**: Git ignore file.
-- **.python-version**: Python version file.
-- **config.json**: Configuration file for real data.
-- **Makefile**: Makefile for building and running the project.
-- **README.md**: This README file.
-- **requirements.txt**: Project dependencies.
+Happy renting! 🏡
 
 ## Automation
 
@@ -154,7 +246,6 @@ To automate the script to run daily, you can use cron jobs on Linux or Task Sche
     ```sh
     crontab -e
     ```
-
 2. Add the following line to run the script every day at 8 AM:
     ```sh
     0 8 * * * /path/to/telegramenv/bin/python /path/to/your/project/src/main.py config.json 3
@@ -165,9 +256,6 @@ To automate the script to run daily, you can use cron jobs on Linux or Task Sche
 1. Open Task Scheduler and create a new task.
 2. Set the trigger to run daily at your desired time.
 3. Set the action to start a program and point it to your Python executable and the script:
-    ```
-    Program/script: C:\path\to\telegramenv\Scripts\python.exe
-    Add arguments: C:\path\to\your\project\src\main.py config.json 3
-    ```
-
----
+    - **Program/script**: `C:\path\to\telegramenv\Scripts\python.exe`
+    - **Add arguments**: `C:\path\to\your\project\src\main.py config.json 3`
+    - **Start in**: `C:\path\to\your\project`

@@ -5,4 +5,3 @@ __pycache__/
 *.log
 config.json
 telegramenv/
-tests/config_test.json

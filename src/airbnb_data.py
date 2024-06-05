@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timedelta
 from ics import Calendar
 import logging
-from config_utils import find_config_paths, load_configuration, print_pretty_json
+from config_utils import find_config_path, load_configuration, print_pretty_json
 import os
 
 # Configure logging
@@ -90,18 +90,15 @@ def get_airbnb_reservations(config, days):
 
 
 if __name__ == "__main__":
-    config_paths = find_config_paths()
-    if not config_paths:
+    config_path = find_config_path()
+    if not config_path:
         print("Configuration file not found.")
         exit(1)
 
-    for config_path in config_paths:
-        config = load_configuration(config_path)
-        if config:
-            reservations = get_airbnb_reservations(
-                config, 600
-            )  # Fetch for next 600 days
-            print(f"Reservations from {config_path}:")
-            print_pretty_json(reservations)
-        else:
-            print(f"Failed to load configuration from {config_path}.")
+    config = load_configuration(config_path)
+    if config:
+        reservations = get_airbnb_reservations(config, 600)  # Fetch for next 600 days
+        print(f"Reservations from {config_path}:")
+        print_pretty_json(reservations)
+    else:
+        print(f"Failed to load configuration from {config_path}.")
