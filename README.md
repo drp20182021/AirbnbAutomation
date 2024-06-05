@@ -181,37 +181,39 @@ It's important to test your setup to ensure everything is working correctly. The
 
 When the script runs, it sends notifications to the specified Telegram chat. An example notification might look like:
 
-📅 Friday, 01 de November 2024
-🔑 Check-ins: 0
-🚪 Check-outs: 6
-- Apt 1
-- Apt 2
-- Apt 4
-- Apt 5
-- Apt 6
-- Apt 7
-
-📅 Thursday, 05 de June 2025
-🔑 Check-ins: 6
-- Apt 1 - Box 5
-- Apt 2 - Box 4
-- Apt 4 - Box 1
-- Apt 5 - Box 2
-- Apt 6 - Box 3
-- Apt 7 - Box 5
+📅 Thursday, 06 de June 2024
+🔑 Check-ins: 3
+  - Apt 1 - 📫 5
+  - Apt 3 - 📫 1
+  - Apt 5 - 📫 2
 🚪 Check-outs: 0
-
-📅 Friday, 06 de June 2025
-🔑 Check-ins: 0
-🚪 Check-outs: 7
-- Apt 1
-- Apt 2
-- Apt 3
-- Apt 4
-- Apt 5
-- Apt 6
-- Apt 7
-
+----------
+📅 Friday, 07 de June 2024
+🔑 Check-ins: 1
+  - Apt 3 - 📫 1
+🚪 Check-outs: 1
+  - Apt 4
+----------
+📅 Saturday, 08 de June 2024
+🔑 Check-ins: 1
+  - Apt 4 - 📫 1
+🚪 Check-outs: 2
+  - Apt 1
+  - Apt 3
+----------
+📅 Sunday, 09 de June 2024
+🔑 Check-ins: 2
+  - Apt 3 - 📫 1
+  - Apt 5 - 📫 2
+🚪 Check-outs: 2
+  - Apt 3
+  - Apt 5
+----------
+📅 Monday, 10 de June 2024
+🔑 Check-ins: 1
+  - Apt 4 - 📫 1
+🚪 Check-outs: 0
+----------
 
 ## 💼 Features
 
